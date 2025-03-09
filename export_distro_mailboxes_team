@@ -1,0 +1,33 @@
+# Connect to Exchange Online
+$UserPrincipalName = "nnaemeka@qdomain.com"  # Your admin account email
+
+# Import the Exchange Online module and connect to Exchange Online
+Import-Module ExchangeOnlineManagement
+Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName
+
+# Retrieve all distribution groups
+Write-Host "Retrieving distribution groups..."
+$DistributionGroups = Get-DistributionGroup -ResultSize Unlimited
+
+# Output distribution groups in a table
+Write-Host "Distribution Groups:"
+$DistributionGroups | Format-Table -Property Name, PrimarySmtpAddress
+
+# Retrieve all shared mailboxes
+Write-Host "Retrieving shared mailboxes..."
+$SharedMailboxes = Get-Mailbox -RecipientTypeDetails SharedMailbox -ResultSize Unlimited
+
+# Output shared mailboxes in a table
+Write-Host "Shared Mailboxes:"
+$SharedMailboxes | Format-Table -Property DisplayName, PrimarySmtpAddress
+
+# Retrieve all Microsoft Teams (Unified Groups with Teams)
+Write-Host "Retrieving Microsoft Teams..."
+$Teams = Get-UnifiedGroup -ResultSize Unlimited | Where-Object { $_.ResourceProvisioningOptions -contains "Team" }
+
+# Output Teams in a table
+Write-Host "Microsoft Teams:"
+$Teams | Format-Table -Property DisplayName, PrimarySmtpAddress
+
+# Disconnect from Exchange Online after the operation
+Disconnect-ExchangeOnline -Confirm:$false
